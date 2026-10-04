@@ -1,3 +1,4 @@
+## EL MOTOR UTILIZADO ES MYSQL DE ORACLE 
 ## CREAR BASE DE DATOS 
 create database Ventas_Tech_DB
 use Ventas_Tech_DB;
