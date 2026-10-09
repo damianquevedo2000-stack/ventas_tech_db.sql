@@ -1,7 +1,9 @@
-## EL MOTOR UTILIZADO ES MYSQL DE ORACLE 
-## CREAR BASE DE DATOS 
-create database Ventas_Tech_DB
+## EL MOTOR UTILIZADO ES MYSQL DE ORACLE
+ 
+##CREAR BASE DE DATOS
+create database Ventas_Tech_DB;
 use Ventas_Tech_DB;
+
 ## DROPEAR / ELIMINAR BASE DE DATOS
 drop table if exists ventas;
 drop table if exists productos;
@@ -13,7 +15,7 @@ drop table if exists categorias;
 create table categorias (
 id_categoria INT primary key auto_increment,
 nombre_categoria varchar(50) not null,
-descripcion varchar (200))
+descripcion varchar (200));
 
 
 ## tabla de dimensión
@@ -21,7 +23,7 @@ create table productos (
 id_producto INT primary key,
 id_categoria int not null,
 nombre_producto VARCHAR(50),
-precio float not null,
+precio decimal(10,2) not null,
 stock int default 0,
 activo bit  default 0,
 foreign key (id_categoria) references categorias(id_categoria));
@@ -32,9 +34,11 @@ id_cliente int primary key,
 nombre varchar(50) not null,
 email varchar(100) unique,
 ciudad varchar(50),
-fecha_registro date not null
-);
-## tabla de ventas fact o hechos contiene IDS para conectar a otras tablas y campos númericos y de fecha nada mas
+fecha_registro date not null);
+
+## tabla de ventas fact o hechos contiene IDS para conectar a otras tablas y 
+#campos númericos y de fecha nada mas
+
 create table ventas(
 id_venta int primary key,
 id_cliente int not null,
@@ -87,4 +91,18 @@ INSERT INTO ventas (id_venta, id_cliente, id_producto, cantidad, precio_unitario
   ( 9, 4, 4, 1,  120.00, '2024-03-14'),
   (10, 5, 3, 2,  450.00, '2024-03-15');
 
-select * from ventas
+select * from ventas;
+
+
+## PRACTICA DE JOINS -- EXTRA
+
+select * from productos;
+select * from categorias;
+select * from clientes;
+select * from ventas;
+
+#1 ¿QUE NOMBRE TIENEN LOS PRODUCTOS QUE SE HAN VENDIDO EN LA TABLA VENTAS?
+select v.id_producto,p.nombre_producto
+from ventas as v
+join productos as p on v.id_producto = p.id_producto
+
