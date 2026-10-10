@@ -1,0 +1,70 @@
+use ventas_tech_db;
+#select * from productos;
+#select * from categorias;
+#select * from clientes;
+#select * from ventas;
+
+## Consulta 1 — Vista base del proyecto (INNER JOIN)
+
+#Cruce de ventas con clientes, productos y categorias (vista enriquecida para Power BI).
+## 1. CRUCE DE VENTAS POR CLIENTES  DE FORMA AGREGADA 
+select  distinct c.nombre, sum(v.precio_unitario * v.cantidad) as monto
+from clientes as c
+join ventas as v on c.id_cliente = v.id_cliente
+group by c.nombre
+order by monto desc;
+
+
+##2. CRUCE DE VENTAS POR PRODUCTOS
+select p.nombre_producto, sum(v.precio_unitario * v.cantidad) as monto
+from productos as p
+join ventas as v on p.id_producto = v.id_producto
+group by p.nombre_producto
+order by monto desc;
+
+##3. CRUCE DE VENTAS POR CATEGORIAS
+select c.nombre_categoria, sum(v.precio_unitario * v.cantidad) as monto 
+from categorias as c 
+join productos as p on c.id_categoria = p.id_categoria
+join ventas as v on p.id_producto = v.id_producto
+group by c.nombre_categoria
+order by monto desc;
+
+
+##Consulta 2 — Clientes sin ventas (LEFT JOIN) Identificá clientes registrados 
+##que aún no han realizado ninguna compra. 
+#Mostrá su nombre, email y fecha de registro. Usá WHERE ... IS NULL para aislar los casos.
+
+select  c.nombre,c.email,fecha_registro from clientes as c
+left join ventas as v on c.id_cliente=v.id_cliente
+where v.id_cliente is null;
+
+/*/Consulta 3 — Productos sin ventas (LEFT JOIN) Identificá productos del catálogo 
+ que no tienen ninguna venta registrada. Mostrá nombre del producto, categoría y precio.*/
+
+select p.nombre_producto,p.id_categoria,p.precio   
+from productos as p
+left join ventas as v on p.id_producto = v.id_producto
+where v.id_producto is null;
+ 
+
+/*Consulta 4 — Consolidado por canal (UNION ALL)
+ Importante: la columna canal no se consulta, se crea. No busques ese dato en tus tablas — 
+ lo generás vos dentro de cada SELECT como valor literal. Ese es el punto de este ejercicio.
+ Escribí dos SELECT sobre tus ventas, separados por el criterio que corresponda a tu caso
+ (por ejemplo, ventas de dos períodos, dos sucursales o dos orígenes distintos), }
+ y agregá en cada uno una columna de texto fija que identifique el origen. 
+ Unilos con UNION ALL y agrupá ese resultado por origen para obtener el total de cada uno.*/
+ 
+SELECT canal, SUM(total) AS total_canal
+FROM (SELECT fecha_venta, cantidad * precio_unitario AS total, 'Primera quincena' AS canal
+  FROM ventas WHERE fecha_venta < '2024-03-10'
+  UNION ALL
+  SELECT fecha_venta, cantidad * precio_unitario AS total, 'Segunda quincena' AS canal
+  FROM ventas WHERE fecha_venta >= '2024-03-10') AS consolidado
+GROUP BY canal
+order by total_canal desc;
+ 
+
+
+
